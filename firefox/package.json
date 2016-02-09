@@ -1,0 +1,16 @@
+{
+	  "title": "Subtitle Overlay",
+	  "name": "subtitle_overlay",
+	  "version": "1.0.0",
+	  "description": "Overlay subtitles on a streaming video.",
+	  "author": "Sam Saint-Pettersen",
+	  "main": "index.js",
+	  "engines": {
+	    "firefox": ">=38.0a1",
+	    "fennec": ">=38.0a1"
+	  },
+	  "license": "MIT",
+	  "keywords": [
+	    "html5", "video", "subtitles", "srt", "overlay"
+	  ]
+}

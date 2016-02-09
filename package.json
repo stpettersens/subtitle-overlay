@@ -1,0 +1,30 @@
+{
+  "name": "subtitle_overlay",
+  "version": "1.0.0",
+  "description": "Overlay subtitles on a streaming video.",
+  "private": true,
+  "main": "subtitle-overlay",
+  "scripts": {
+    "chrome": "gulp chrome",
+    "firefox": "gulp firefox",
+    "clean": "gulp clean",
+    "test": "echo !TODO"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stpettersens/srt-overlay.git"
+  },
+  "author": "Sam Saint-Pettersen <s.stpettersen+github@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stpettersens/srt-overlay/issues"
+  },
+  "homepage": "https://github.com/stpettersens/srt-overlay#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-data": "^1.2.1",
+    "gulp-rimraf": "^0.2.0",
+    "gulp-ssp-preprocessor": "^1.0.2",
+    "to-title-case": "^1.0.0"
+  }
+}
