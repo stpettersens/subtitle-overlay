@@ -141,10 +141,10 @@ function playbackSubtitles(video) {
                 x: (video.width / 2) - 40,
                 y: video.height - 45
             };
-            sendMessageTab( {type: 'subtitle', subtitle: s});
+            sendMessageTab({type: 'subtitle', subtitle: s});
         }
         if(time == f) {
-            sendMessageTab( {type: 'refresh'});
+            sendMessageTab({type: 'refresh'});
             i++;
         }
         if(i == subtitles.length) {
@@ -172,13 +172,14 @@ function pauseSubtitles() {
     // #fi
 }
 
-// #if CHROME
-function seekSubtitles( currentTime) {
+function seekSubtitles(currentTime) {
     pauseSubtitles();
-    sendMessageTab( {type: 'refresh'});
+    sendMessageTab({type: 'refresh'});
     var subtitles = loadSubtitles();
     subtitles = subtitles.filter(function(s) {
-        if(Math.floor(currentTime * MS) <= s.getStart()) return true;
+        if(Math.floor(currentTime * MS) <= s.getStart()) {
+            return true;
+        }
         return false;
     });
     setTimeAndSeq(
@@ -209,12 +210,12 @@ function showInfo(video, info, params) {
         text: info,
         x: (video.width / 2) - 40,
         y: video.height - 45
-    }
-    sendMessageTab( {type: 'info', info: i});
+    };
+    sendMessageTab({type: 'info', info: i});
 }
 
 function showError(error) {
-    sendMessageTab( {type: 'error', error: error});
+    sendMessageTab({type: 'error', error: error});
 }
 
 chrome.runtime.onMessage.addListener(function(request) {
@@ -241,4 +242,5 @@ chrome.runtime.onMessage.addListener(function(request) {
 exports.parseSubtitles = parseSubtitles;
 exports.loadSubtitles = loadSubtitles;
 exports.clearPlayback = clearPlayback;
+exports.setTimeAndSeq = setTimeAndSeq;
 // #fi
