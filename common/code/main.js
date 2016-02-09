@@ -17,6 +17,8 @@ var storage = require('./storage.js');
 // #if CHROME
 var g_playing;
 const MS = 1000;
+const OFFSET_X = 40;
+const OFFSET_Y = 20;
 // #fi
 
 /**
@@ -138,8 +140,8 @@ function playbackSubtitles(video) {
         if(time == s) {
             var s = {
                 text: subtitles[i].getText(),
-                x: (video.width / 2) - 40,
-                y: video.height - 45
+                x: (video.width / 2) - OFFSET_X,
+                y: video.height - OFFSET_Y
             };
             sendMessageTab({type: 'subtitle', subtitle: s});
         }
@@ -166,10 +168,14 @@ function loadSubtitles() {
     return subtitles;
 }
 
+function setTimeAndSeq(time, seq) {
+    Storage.set('so_time', time);
+    Storage.set('so_at', seq);
+}
+
+// #if CHROME
 function pauseSubtitles() {
-    // #if CHROME
     window.clearInterval(g_playing);
-    // #fi
 }
 
 function seekSubtitles(currentTime) {
@@ -187,12 +193,6 @@ function seekSubtitles(currentTime) {
         subtitles[0].getSeq()
     );
 }
-// #fi
-
-function setTimeAndSeq(time, seq) {
-    Storage.set('so_time', time);
-    Storage.set('so_at', seq);
-}
 
 function clearPlayback() {
     pauseSubtitles();
@@ -200,7 +200,6 @@ function clearPlayback() {
     Storage.remove('so_at');
 }
 
-// #if CHROME
 function showInfo(video, info, params) {
     info = info.toString();
     params.map(function(param) {
@@ -208,8 +207,8 @@ function showInfo(video, info, params) {
     });
     var i = {
         text: info,
-        x: (video.width / 2) - 40,
-        y: video.height - 45
+        x: (video.width / 2) - OFFSET_X,
+        y: video.height - OFFSET_Y
     };
     sendMessageTab({type: 'info', info: i});
 }
@@ -241,6 +240,5 @@ chrome.runtime.onMessage.addListener(function(request) {
 // #elseif FIREFOX
 exports.parseSubtitles = parseSubtitles;
 exports.loadSubtitles = loadSubtitles;
-exports.clearPlayback = clearPlayback;
 exports.setTimeAndSeq = setTimeAndSeq;
 // #fi

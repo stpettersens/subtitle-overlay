@@ -16,6 +16,8 @@ var storage = require('./data/storage.js');
 
 var g_playing;
 const MS = 1000;
+const OFFSET_X = 40;
+const OFFSET_Y = 20;
 
 var button = buttons.ActionButton({
     id: 'subtitle-overlay-btn',
@@ -69,8 +71,8 @@ function playbackSubtitles(worker, video) {
         if(time == s) {
             var s = {
                 text: subtitles[i].getText(),
-                x: (video.width / 2) - 40,
-                y: video.height - 45
+                x: (video.width / 2) - OFFSET_X,
+                y: video.height - OFFSET_Y
             };
             worker.postMessage({type: 'subtitle', subtitle: s});
         }
@@ -104,6 +106,12 @@ function seekSubtitles(worker, currentTime) {
     );
 }
 
+function clearPlayback() {
+    pauseSubtitles();
+    storage.Storage.remove('so_time');
+    storage.Storage.remove('so_at');
+}
+
 function showInfo(worker, video, info, params) {
     info = info.toString();
     params.map(function(param) {
@@ -111,8 +119,8 @@ function showInfo(worker, video, info, params) {
     });
     var i = {
         text: info,
-        x: (video.width / 2) - 40,
-        y: video.height - 45
+        x: (video.width / 2) - OFFSET_X,
+        y: video.height - OFFSET_Y
     };
     worker.postMessage({type: 'info', info: i});
 }
@@ -128,7 +136,7 @@ pageMod.PageMod({
     onAttach: function(worker) {
         worker.on('message', function(message) {
             if(message.action === 'clear') {
-                core.clearPlayback();
+                clearPlayback();
             }
             if(message.action === 'load') {
                 core.parseSubtitles(message.lines, message.filename);
