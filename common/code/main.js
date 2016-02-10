@@ -23,8 +23,8 @@ const OFFSET_Y = 20;
 
 /**
  * Parse the subtitles (*.srt) file.
- * @param lines string[] Lines of subtitles file.
- * @param filename string Filename of subtitles file.
+ * @param lines {Array} Lines of subtitles file.
+ * @param filename {String} Filename of subtitles file.
 */
 function parseSubtitles(lines, filename) {
 
@@ -72,6 +72,12 @@ function parseSubtitles(lines, filename) {
         Storage.set('so_subtitles', filename);
     }
 
+    /** 
+     * Convert timestamp to time in milliseconds.
+     * @private
+     * @param timestamp {String} nn:nn:nn,nnn timestamp string.
+     * @returns {Number} Time represented in milliseconds.
+    */
     function convertTimeToMs(timestamp) {
         var p = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
         var matches = timestamp.match(p);
@@ -85,31 +91,60 @@ function parseSubtitles(lines, filename) {
         return time;
     }
 
+    /**
+     * Remove newlines from a value.
+     * @private
+     * @param value {String} Value to remove newlines from.
+     * @returns {String} Value with newlines removed.
+    */
     function removeNewline(value) {
         return value.replace(/^\n/, '');
     }
 
+    /**
+     * Remove sequence from a value.
+     * @private
+     * @param value {String} Value to remove sequence from.
+     * @returns {String} Value with sequence removed.
+    */
     function removeSequence(value) {
         return value.replace(/^\d+/, '');
     }
 
+    /**
+     * Trim a value.
+     * @private
+     * @param value {String} Value to trim.
+     * @returns {String} Trimmed value.
+    */
     function trim(value) {
         return value.trim();
     }
 
-    function clearSubtitles() {
-        Storage.getMatchingKeys(/^so_sub_/, 'subt_serialized').map(function(k) {
-            Storage.remove(k);
-        });
-    }
-
+    /**
+     * Check if loaded subtitles are valid.
+     * @returns {Boolean} Are loaded subtitles valid?
+    */
     function isValid(data) {
         if(/^\d+/.test(data)) return true;
         return false;
     }
 }
 
+/** 
+ * Clear the subtitles from storage.
+*/
+function clearSubtitles() {
+    Storage.getMatchingKeys(/^so_sub_/, 'subt_serialized').map(function(k) {
+        Storage.remove(k);
+    });
+}
+
 // #if CHROME
+/**
+ * Playback subtitles over video.
+ * @param video {Object} Video information (width and height).
+*/
 function playbackSubtitles(video) {
 
     var input = Storage.get('so_subtitles');
@@ -157,6 +192,10 @@ function playbackSubtitles(video) {
 }
 // #fi
 
+/**
+ * Load (and sort) the subtitles from storage.
+ * @returns {Array} Subtitles as an array of sorted strings.
+*/
 function loadSubtitles() {
     var subtitles = [];
     Storage.getMatchingValues(/^so_sub_/, 'subt_serialized').map(function(s) {
@@ -168,16 +207,28 @@ function loadSubtitles() {
     return subtitles;
 }
 
+/**
+ * Set time position and current subtitle.
+ * @param time {Number} Time in milliseconds for current position in playback.
+ * @param seq {Number} Index of the current subtitle in sequence.
+*/
 function setTimeAndSeq(time, seq) {
     Storage.set('so_time', time);
     Storage.set('so_at', seq);
 }
 
 // #if CHROME
+/**
+ * Pause subtitles playback.
+*/
 function pauseSubtitles() {
     window.clearInterval(g_playing);
 }
 
+/**
+ * Seek (i.e. retrieve) subtitles for playback position (i.e. current time).
+ * @param currentTime {Number} Current time as floating point number (milliseconds).
+*/
 function seekSubtitles(currentTime) {
     pauseSubtitles();
     sendMessageTab({type: 'refresh'});
@@ -194,12 +245,21 @@ function seekSubtitles(currentTime) {
     );
 }
 
+/**
+ * Clear the time and current subtitle values from storage.
+*/
 function clearPlayback() {
     pauseSubtitles();
     Storage.remove('so_time');
     Storage.remove('so_at');
 }
 
+/**
+ * Display information for loaded subtitles over video.
+ * @param video {Object} Video information (width and height).
+ * @param info {String} Information message to display.
+ * @param params {String} Parameters to use for $ placeholders.
+*/
 function showInfo(video, info, params) {
     info = info.toString();
     params.map(function(param) {
@@ -213,10 +273,19 @@ function showInfo(video, info, params) {
     sendMessageTab({type: 'info', info: i});
 }
 
+/**
+ * Display error message over video.
+ * @param worker {Object} Worker to emit messages.
+ * @param error {String} Error message to display.
+*/
 function showError(error) {
     sendMessageTab({type: 'error', error: error});
 }
 
+/**
+ * Respond to messages from main content script's event handlers
+ * with appropriate action (e.g. 'play'-> playbackSubtitles(...)).
+*/
 chrome.runtime.onMessage.addListener(function(request) {
     if(request.action === 'clear') {
         clearPlayback();
@@ -238,7 +307,11 @@ chrome.runtime.onMessage.addListener(function(request) {
     }
 });
 // #elseif FIREFOX
+/**
+ * Make the following functions available to index.js.
+*/
 exports.parseSubtitles = parseSubtitles;
 exports.loadSubtitles = loadSubtitles;
+exports.clearSubtitles = clearSubtitles;
 exports.setTimeAndSeq = setTimeAndSeq;
 // #fi

@@ -14,6 +14,12 @@ function sendMessage(request) {
     // #fi
 }
 
+// #if FIREFOX
+function sendMessagePort(request) {
+    self.port.emit('message', request);
+}
+// #fi
+
 function sendMessageTab(request) {
     // #if CHROME
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {

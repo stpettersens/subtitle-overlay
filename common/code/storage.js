@@ -17,7 +17,6 @@ var Storage = (function() {
     Storage.setCollection = function(key, collection, value) {
         // #if CHROME
         Storage.set(key, value);
-        Storage.records++;
         // #elseif FIREFOX
         if(!ss.storage[collection]) {
             ss.storage[collection] = [];
@@ -71,14 +70,6 @@ var Storage = (function() {
         // #fi
         return keys;
     };
-
-    Storage.records = function(collection) {
-        // #if CHROME
-        return sessionStorage.length;
-        // #elseif FIREFOX
-        return ss.storage[collection].length;
-        // #fi
-    }
 
     return Storage;
 

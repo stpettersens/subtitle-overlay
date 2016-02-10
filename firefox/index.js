@@ -6,8 +6,8 @@
     Released under the MIT/X11 License.
 */
 
-var buttons = require('sdk/ui/button/action');
-var tabs = require('sdk/tabs');
+var { ToggleButton } = require('sdk/ui/button/toggle');
+var panels = require('sdk/panel');
 var pageMod = require('sdk/page-mod');
 var { setInterval, clearInterval } = require('sdk/timers');
 var data = require('sdk/self').data;
@@ -15,11 +15,15 @@ var core = require('./data/main.js');
 var storage = require('./data/storage.js');
 
 var g_playing;
+
 const MS = 1000;
 const OFFSET_X = 40;
 const OFFSET_Y = 20;
 
-var button = buttons.ActionButton({
+/**
+ * Set up the load subtitles button.
+*/
+var button = ToggleButton({
     id: 'subtitle-overlay-btn',
     label: 'Subtitle Overlay',
     icon: {
@@ -30,25 +34,52 @@ var button = buttons.ActionButton({
     onClick: openPopup
 });
 
+/**
+ * Set up the load subtitles panel ("popup").
+ * Attach necessary content scripts.
+*/
+var panel = panels.Panel({
+    contentURL: data.url('popup.html'),
+    contentScriptFile: ['./messaging.js', './content.js'],
+    onHide: hidePopup
+});
+
+/**
+ * Load subtitles via the popup.
+ * Listen for and respond to 'load' action.
+*/
+panel.port.on('message', function(message) {
+    if(message.action === 'load') {
+        core.parseSubtitles(message.lines, message.filename);
+    }
+});
+
+/**
+ * Display the popup.
+ * @param state {Object} State of popup.
+*/
 function openPopup(state) {
-    tabs.open({
-        url: data.url('popup.html'),
-        onReady: attachScript
-    });
+    if(state.checked) {
+        panel.show({
+            position: button
+        });
+    }
 }
 
-function attachScript(tab) {
-    var worker = tab.attach({
-        contentScriptFile: ['./messaging.js', './content.js']
-    });
-    worker.on('message', function(message) {
-        if(message.action === 'load') {
-            core.parseSubtitles(message.lines, message.filename);
-        }
-    });
+/**
+ * Hide the popup.
+*/
+function hidePopup() {
+    button.state('window', {checked: false});
 }
 
+/**
+ * Playback subtitles over video.
+ * @param worker {Object} Worker to emit messages.
+ * @param video {Object} Video information (width and height).
+*/
 function playbackSubtitles(worker, video) {
+
     var input = storage.Storage.get('so_subtitles');
     var subtitles = core.loadSubtitles();
     var runtime = subtitles[subtitles.length - 1].getEnd();
@@ -86,10 +117,18 @@ function playbackSubtitles(worker, video) {
     }, 1);
 }
 
+/**
+ * Pause subtitles playback.
+*/
 function pauseSubtitles() {
     clearInterval(g_playing);
 }
 
+/**
+ * Seek (i.e. retrieve) subtitles for playback position (i.e. current time).
+ * @param worker {Object} Worker to emit messages.
+ * @param currentTime {Number} Current time as floating point number (milliseconds).
+*/
 function seekSubtitles(worker, currentTime) {
     pauseSubtitles();
     worker.postMessage({type: 'refresh'});
@@ -106,12 +145,22 @@ function seekSubtitles(worker, currentTime) {
     );
 }
 
+/**
+ * Clear the time and current subtitle values from storage.
+*/
 function clearPlayback() {
     pauseSubtitles();
     storage.Storage.remove('so_time');
     storage.Storage.remove('so_at');
 }
 
+/**
+ * Display information for loaded subtitles over video.
+ * @param worker {Object} Worker to emit messages.
+ * @param video {Object} Video information (width and height).
+ * @param info {String} Information message to display.
+ * @param params {String} Parameters to use for $ placeholders.
+*/
 function showInfo(worker, video, info, params) {
     info = info.toString();
     params.map(function(param) {
@@ -125,10 +174,20 @@ function showInfo(worker, video, info, params) {
     worker.postMessage({type: 'info', info: i});
 }
 
+/**
+ * Display error message over video.
+ * @param worker {Object} Worker to emit messages.
+ * @param error {String} Error message to display.
+*/
 function showError(worker, error) {
     worker.postMessage({type: 'error', error: error});
 }
 
+/**
+ * Set up the content scripts and CSS for a loaded page with <video>
+ * and respond to messages from main content script's event listeners
+ * with appropriate action (e.g. 'play'-> playbackSubtitles(...)).
+*/
 pageMod.PageMod({
     include: ['*'],
     contentScriptFile: ['./messaging.js', './content.js'],

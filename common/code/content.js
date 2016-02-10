@@ -41,6 +41,11 @@ function refreshOverlay(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * Display a subtitle in the overlay canvas.
+ * @param ctx {Object} Context for canvas.
+ * @param subtitle {Object} Subtitle to display.
+*/
 function displaySubtitle(ctx, subtitle) {
     ctx.font = '14pt Verdana';
     ctx.textAlign = 'center';
@@ -51,7 +56,14 @@ function displaySubtitle(ctx, subtitle) {
     ctx.fillText(subtitle.text, subtitle.x, subtitle.y);
 }
 
+/**
+ * Initialize the main content script.
+*/
 function init() {
+    /*
+        Get target video (first video on page), create the subtitle overlay
+        and add event listeners to track playing, pausing and seeking.
+    */ 
     var video = document.getElementsByTagName('video')[0];
     var videoInfo = null;
     if(video !== undefined) {
@@ -59,25 +71,41 @@ function init() {
         video = document.getElementsByTagName('video')[0];
         video.addEventListener('play', handlePlayEvent, false);
         video.addEventListener('pause', handlePauseEvent, false);
-        video.addEventListener('seeking', handleSeekEvent, false);
+        video.addEventListener('seeking', handleSeekingEvent, false);
     }
 
-    sendMessage({action: 'clear'});
+    // Clear stored subtitles from extension storage.
+    sendMessage({action: 'clear'}); 
 
+    /**
+     * Handle play event:
+     * Send message to extension core to playback subtitles.
+    */
     function handlePlayEvent(e) {
         sendMessage({action: 'play', info: videoInfo});
     }
 
+    /**
+     * Handle pause event:
+     * Send message to extension core to playback subtitles.
+    */
     function handlePauseEvent(e) {  
         sendMessage({action: 'pause'});
     }
 
-    function handleSeekEvent(e) {
+    /**
+     * Handle seeking event:
+     * Send message to extension core to seek to relevant subtitles.
+    */
+    function handleSeekingEvent(e) {
         sendMessage({action: 'seeking', time: video.currentTime});
     }
 
+    /**
+     * Listen to messages from extension core to display 
+     * and clear subtitles (and show any information + errors) over target video.
+    */
     addMessageListener(function(request) {
-
         var canvas = document.getElementById('so_subtitles');
         var ctx = canvas.getContext('2d');
 
@@ -96,8 +124,13 @@ function init() {
     });
 
     // #if FIREFOX
+    /** 
+     * Event listener for 'file-message' event fired from
+     * popup.html which messages listener over port API
+     * to parse + load subtitles.
+    */
     window.addEventListener('file-message', function(request) {
-        sendMessage({
+        sendMessagePort({
             action: 'load', 
             lines: unsafeWindow.lines, 
             filename: unsafeWindow.filename
