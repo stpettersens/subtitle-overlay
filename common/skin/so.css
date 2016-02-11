@@ -6,17 +6,21 @@
     Released under the MIT/X11 License.
 */
 
+/* Width and height for popup.html. */
 #so_extension_popup {
     width: 250px;
     height: 50px;
 }
 
+/* Position and width + height for container <div>. */
 .so_extension {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
+/* Position and width + height + z-index for <canvas> 
+within container <div>. */
 .so_extension canvas {
     position: absolute;
     top: 0;
@@ -25,6 +29,8 @@
     z-index: 1;
 }
 
+/* Position and width + height + z-index for <video> 
+within container <div>. */
 .so_extension video {
     position: absolute;
     top: 0;

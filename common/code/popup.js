@@ -6,6 +6,9 @@
     Released under the MIT/X11 License.
 */
 
+/**
+ * Handle loading subtiles from popup.html into the extension core.
+*/
 document.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('input');
     input.addEventListener('change', handleFileSelect, false);

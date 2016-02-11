@@ -6,6 +6,11 @@
     Released under the MIT/X11 License.
 */
 
+/**
+ * Send a message to extension core from content script (Chrome).
+ * Send a message between extension core and content script (Firefox).
+ * @param request {Object} Request message object.
+*/
 function sendMessage(request) {
     // #if CHROME
     chrome.runtime.sendMessage(request);
@@ -15,11 +20,19 @@ function sendMessage(request) {
 }
 
 // #if FIREFOX
+/**
+ * Send a message to extension core from content script (via Port API).
+ * @param request {Object} Request message object.
+*/
 function sendMessagePort(request) {
     self.port.emit('message', request);
 }
 // #fi
 
+/**
+ * Send a message to content script (running in a tab) from extension core.
+ * @param request {Object} Request message object.
+*/
 function sendMessageTab(request) {
     // #if CHROME
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -30,6 +43,10 @@ function sendMessageTab(request) {
     // #fi
 }
 
+/**
+ * Send a file message to content script (running in a tab) from extension core.
+ * @param request {Object} Request file-message object.
+*/
 function sendFileMessage(request) {
     // #if CHROME
     sendMessage(request);
@@ -42,6 +59,10 @@ function sendFileMessage(request) {
     // #fi
 }
 
+/** 
+ * Add a message listener to content script.
+ * @param request {Function} Function with request parameter.
+*/
 function addMessageListener(request) {
     // #if CHROME
     chrome.runtime.onMessage.addListener(request);

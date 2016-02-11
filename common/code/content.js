@@ -6,6 +6,10 @@
     Released under the MIT/X11 License.
 */
 
+/**
+ * Create overlay for target video.
+ * @param video {Object} Target video.
+*/
 function createOverlay(video) {
     var canvas = document.createElement('canvas');
     canvas.id = 'so_subtitles';
@@ -16,6 +20,9 @@ function createOverlay(video) {
     var w = document.getElementsByClassName('so_extension')[0];
     w.appendChild(canvas);
 
+    /**
+     * Set dimensions for overlay on YouTube videos.
+    */
     function setYouTube() {
         if(/youtube\.com\/watch/.test(document.location.href)) {
             canvas.width = 640;
@@ -23,13 +30,21 @@ function createOverlay(video) {
         }
     }
 
-    function wrap(target, el, _class) {
+    /**
+     * Wrap target element with a classed element.
+     * @private
+     * @param target {String} Target element name.
+     * @param el {String} Wrapping element name.
+     * @param className {String} Wrapping element class. 
+    */
+    function wrap(target, el, className) {
         var src = document.getElementsByTagName(target)[0];
-        var wrapped = '<' + el + ' class="' + _class + '">';
+        var wrapped = '<' + el + ' class="' + className + '">';
         wrapped += src.outerHTML + '</' + el + '>';
         src.outerHTML = wrapped;
     }
 
+    // Set video width and height from canvas width and height.
     var videoInfo = {
         width: canvas.width,
         height: canvas.height
@@ -37,6 +52,11 @@ function createOverlay(video) {
     return videoInfo;
 }
 
+/**
+ * Refresh (i.e. clear) the overlay canvas.
+ * @param ctx {Object} Context for canvas.
+ * @param canvas {Object} Canvas object.
+*/
 function refreshOverlay(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }

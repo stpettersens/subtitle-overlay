@@ -123,6 +123,7 @@ function parseSubtitles(lines, filename) {
 
     /**
      * Check if loaded subtitles are valid.
+     * @private
      * @returns {Boolean} Are loaded subtitles valid?
     */
     function isValid(data) {
