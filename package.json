@@ -23,6 +23,7 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-data": "^1.2.1",
+    "gulp-jsdoc3": "^0.1.1",
     "gulp-rimraf": "^0.2.0",
     "gulp-ssp-preprocessor": "^1.0.2",
     "to-title-case": "^1.0.0"

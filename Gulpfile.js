@@ -5,6 +5,7 @@
 var gulp = require('gulp'),
     data = require('gulp-data'),
    clean = require('gulp-rimraf'),
+   jsdoc = require('gulp-jsdoc3'),
       pp = require('gulp-ssp-preprocessor'),
       tc = require('to-title-case'),
     exec = require('child_process').exec;
@@ -54,6 +55,11 @@ gulp.task('firefox', ['ff-pp'], function() {
         }
         console.log(stdout);
     });
+});
+
+gulp.task('doc', function() {
+    gulp.src(['common/code/*.js'], {read: false})
+    .pipe(jsdoc());
 });
 
 gulp.task('clean', ['manifest'], function() {

@@ -240,10 +240,12 @@ function seekSubtitles(currentTime) {
         }
         return false;
     });
-    setTimeAndSeq(
-        Math.floor(currentTime * MS), 
-        subtitles[0].getSeq()
-    );
+    if(subtitles[0].getSeq() !== undefined) {
+        setTimeAndSeq(
+            Math.floor(currentTime * MS), 
+            subtitles[0].getSeq()
+        );
+    }
 }
 
 /**
