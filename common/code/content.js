@@ -16,9 +16,23 @@ function createOverlay(video) {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight - 35;
     setYouTube();
-    wrap('video', 'div', 'so_extension');
-    var w = document.getElementsByClassName('so_extension')[0];
-    w.appendChild(canvas);
+    if(!isYouTube()) {
+        wrap('video', 'div', 'so_extension');
+        var w = document.getElementsByClassName('so_extension')[0];
+        w.appendChild(canvas);
+    }
+
+    /**
+     * Check if on YouTube.
+     *
+    */
+    function isYouTube() {
+        var oyt = false;
+        if(/youtube\.com/.test(document.location.href)) {
+            oyt = true;
+        }
+        return oyt;
+    }
 
     /**
      * Set dimensions for overlay on YouTube videos.
