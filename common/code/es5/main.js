@@ -15,7 +15,7 @@ var storage = require('./storage.js');
 // #fi
 
 // #if CHROME
-var g_playing;
+var g_playing = null;
 const MS = 1000;
 const OFFSET_X = 40;
 const OFFSET_Y = 20;

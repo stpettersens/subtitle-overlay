@@ -53,8 +53,8 @@ function createOverlay(video) {
     */
     function wrap(target, el, className) {
         let src = document.getElementsByTagName(target)[0];
-        let wrapped = '<' + el + ' class="' + className + '">';
-        wrapped += src.outerHTML + '</' + el + '>';
+        let wrapped = `<${el} class="${className}">`;
+        wrapped += `${src.outerHTML}</${el}>`;
         src.outerHTML = wrapped;
     }
 
