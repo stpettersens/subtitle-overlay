@@ -7,15 +7,15 @@
 */
 
 // #if FIREFOX
-let subtitle = require('./subtitle.js');
-let storage = require('./storage.js');
+var subtitle = require('./subtitle.js');
+var storage = require('./storage.js');
 // #prefix Subtitle. with subtitle.
 // #prefix Subtitle( with subtitle.
 // #prefix Storage. with storage.
 // #fi
 
 // #if CHROME
-let g_playing = null;
+var g_playing;
 const MS = 1000;
 const OFFSET_X = 40;
 const OFFSET_Y = 20;
@@ -34,15 +34,15 @@ function parseSubtitles(lines, filename) {
     else {
         clearSubtitles();
 
-        let seqs = [];
-        let starts = [];
-        let ends = [];
-        let text = [];
-        let i = 0;
+        var seqs = [];
+        var starts = [];
+        var ends = [];
+        var text = [];
+        var i = 0;
 
         lines.map(function(l) {
-            let p = /(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})/;
-            let matches = l.match(p);
+            p = /(\d{2}:\d{2}:\d{2},\d{3})\s-->\s(\d{2}:\d{2}:\d{2},\d{3})/;
+            var matches = l.match(p);
             if(matches != null) {
                 starts.push(convertTimeToMs(matches[1]));
                 ends.push(convertTimeToMs(matches[2]));
@@ -61,12 +61,12 @@ function parseSubtitles(lines, filename) {
         text = text.join("\n").split("|")
         .map(removeNewline).map(removeSequence).map(trim);
 
-        let subtitles = [];
-        for(let i = 0; i < seqs.length; i++) {
+        var subtitles = [];
+        for(var i = 0; i < seqs.length; i++) {
             subtitles.push(new Subtitle(seqs[i], starts[i], ends[i], text[i]));
         }
 
-        for(let i = 0; i < subtitles.length; i++) {
+        for(var i = 0; i < subtitles.length; i++) {
             Storage.setCollection('so_sub_' + (i + 1), 'subt_serialized', subtitles[i].serialize());
         }
         Storage.set('so_subtitles', filename);
@@ -79,14 +79,14 @@ function parseSubtitles(lines, filename) {
      * @returns {Number} Time represented in milliseconds.
     */
     function convertTimeToMs(timestamp) {
-        let p = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
-        let matches = timestamp.match(p);
-        let hours = parseInt(matches[1]);
-        let minutes = parseInt(matches[2]);
-        let seconds = parseInt(matches[3]);
-        let ms = parseInt(matches[4]);
+        var p = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
+        var matches = timestamp.match(p);
+        var hours = parseInt(matches[1]);
+        var minutes = parseInt(matches[2]);
+        var seconds = parseInt(matches[3]);
+        var ms = parseInt(matches[4]);
 
-        let time = (hours * 3600) + (minutes * 60) + seconds;
+        var time = (hours * 3600) + (minutes * 60) + seconds;
         time = (time * 1000) + ms;
         return time;
     }
@@ -148,33 +148,33 @@ function clearSubtitles() {
 */
 function playbackSubtitles(video) {
 
-    let input = Storage.get('so_subtitles');
-    let subtitles = loadSubtitles();
-    let runtime = subtitles[subtitles.length - 1].getEnd();
+    var input = Storage.get('so_subtitles');
+    var subtitles = loadSubtitles();
+    var runtime = subtitles[subtitles.length - 1].getEnd();
 
-    /*let clock = new Clock();
+    /*var clock = new Clock();
     clock.setTimeMs(runtime);
 
     showInfo(video, "Playing back: '$' (Runtime: $s [$ms])...", 
     [input, clock.getTime(), runtime]);*/
 
-    let resume = parseInt(Storage.get('so_time'));
+    var resume = parseInt(Storage.get('so_time'));
     if(isNaN(resume)) resume = 0;
 
-    let i = parseInt(Storage.get('so_at'));
+    var i = parseInt(Storage.get('so_at'));
     if(isNaN(i)) i = 0;
 
-    let start = new Date().getTime() - resume;
+    var start = new Date().getTime() - resume;
     g_playing = window.setInterval(function() {
 
-        let time = Math.floor((new Date().getTime() - start) / MS); 
-        let s = Math.floor(subtitles[i].getStart() / MS);
-        let f = Math.floor(subtitles[i].getEnd() / MS);
+        var time = Math.floor((new Date().getTime() - start) / MS); 
+        var s = Math.floor(subtitles[i].getStart() / MS);
+        var f = Math.floor(subtitles[i].getEnd() / MS);
 
         setTimeAndSeq(time * MS, i);
 
         if(time == s) {
-            let s = {
+            var s = {
                 text: subtitles[i].getText(),
                 x: (video.width / 2) - OFFSET_X,
                 y: video.height - OFFSET_Y
@@ -198,7 +198,7 @@ function playbackSubtitles(video) {
  * @returns {Array} Subtitles as an array of sorted strings.
 */
 function loadSubtitles() {
-    let subtitles = [];
+    var subtitles = [];
     Storage.getMatchingValues(/^so_sub_/, 'subt_serialized').map(function(s) {
         subtitles.push(Subtitle.deserialize(s));
     });
@@ -233,7 +233,7 @@ function pauseSubtitles() {
 function seekSubtitles(currentTime) {
     pauseSubtitles();
     sendMessageTab({type: 'refresh'});
-    let subtitles = loadSubtitles();
+    var subtitles = loadSubtitles();
     subtitles = subtitles.filter(function(s) {
         if(Math.floor(currentTime * MS) <= s.getStart()) {
             return true;
@@ -268,7 +268,7 @@ function showInfo(video, info, params) {
     params.map(function(param) {
         info = info.replace('$', param);
     });
-    let i = {
+    var i = {
         text: info,
         x: (video.width / 2) - OFFSET_X,
         y: video.height - OFFSET_Y

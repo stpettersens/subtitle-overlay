@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/stpettersens/srt-overlay#readme",
   "devDependencies": {
+    "babel-preset-es2015": "^6.5.0",
     "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.2",
     "gulp-data": "^1.2.1",
     "gulp-jsdoc3": "^0.1.1",
     "gulp-rimraf": "^0.2.0",

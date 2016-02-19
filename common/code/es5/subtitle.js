@@ -6,7 +6,7 @@
     Released under the MIT/X11 License.
 */
 
-class Subtitle {
+var Subtitle = (function() {
 
     /**
      * Subtitle class which represents a single subtitle.
@@ -16,7 +16,7 @@ class Subtitle {
      * @param end {Number} End time in milliseconds.
      * @param text {String} Subtitle text.
     */
-    constructor(seq, start, end, text) {
+    function Subtitle(seq, start, end, text) {
         this.seq = seq;
         this.start = start;
         this.end = end;
@@ -27,41 +27,41 @@ class Subtitle {
      * Get sequence index for subtitle.
      * @returns {Number} Sequence index.
     */
-    getSeq() {
+    Subtitle.prototype.getSeq = function() {
         return this.seq;
-    }
+    };
 
     /**
      * Get start time for subtitle.
      * @returns {Number} Start time in milliseconds.
     */
-    getStart() {
+    Subtitle.prototype.getStart = function() {
         return this.start;
-    }
+    };
 
     /**
      * Get end time for subtitle.
      * @returns {Number} End time in milliseconds.
     */
-    getEnd() {
+    Subtitle.prototype.getEnd = function() {
         return this.end;
-    }
+    };
 
     /**
      * Get text for subtitle.
      * @returns {String} Subtitle text.
     */
-    getText() {
+    Subtitle.prototype.getText = function() {
         return this.text;
-    }
+    };
 
     /**
      * Serialize subtitle as string for storing.
      * @returns {String} Serialized subtitle string.
     */
-    serialize() {
-        return `${this.seq}::${this.start}::${this.end}::${this.text}`;
-    }
+    Subtitle.prototype.serialize = function() {
+        return this.seq + '::' + this.start + '::' +  this.end + '::' + this.text;
+    };
 
     /** 
      * Deserialize into (i.e. create) a new Subtitle from subtitle string.
@@ -69,11 +69,14 @@ class Subtitle {
      * @param {String} Subtitle string to deserialize.
      * @returns {Subtitle} New Subtitle.
     */ 
-    static deserialize(serialized) {
-        let s = serialized.split("::");
+    Subtitle.deserialize = function(serialized) {
+        var s = serialized.split("::");
         return new Subtitle(parseInt(s[0]), parseInt(s[1]), parseInt(s[2]), s[3]);
     };
-}
+
+    return Subtitle; 
+
+})();
 
 // #if FIREFOX
 exports.Subtitle = Subtitle;

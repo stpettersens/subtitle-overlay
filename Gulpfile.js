@@ -2,13 +2,14 @@
     Gulpfile to build and package browser addon for both Chrome and Firefox.
 */
 
-var gulp = require('gulp'),
-    data = require('gulp-data'),
-   clean = require('gulp-rimraf'),
-   jsdoc = require('gulp-jsdoc3'),
-      pp = require('gulp-ssp-preprocessor'),
-      tc = require('to-title-case'),
-    exec = require('child_process').exec;
+const gulp = require('gulp'),
+      data = require('gulp-data'),
+     babel = require('gulp-babel'),
+     clean = require('gulp-rimraf'),
+     jsdoc = require('gulp-jsdoc3'),
+        pp = require('gulp-ssp-preprocessor'),
+        tc = require('to-title-case'),
+      exec = require('child_process').exec;
 
 var addon = {};
 
@@ -26,13 +27,18 @@ gulp.task('manifest', function() {
 });
 
 gulp.task('chrome-copy', ['manifest'], function() {
-    return gulp.src(['chrome/*', 'common/skin/*.css'])
+    return gulp.src(['chrome/*', 'common/ui/*.html', 'common/skin/*.css'])
     .pipe(gulp.dest(addon.dir + '_chrome_addon'));
 });
 
 gulp.task('chrome', ['chrome-copy'], function() {
-    return gulp.src(['common/code/*.js', 'common/ui/*.html'])
-    .pipe(pp({conditions: ['CHROME']}))
+    return gulp.src(['common/code/*.js'])
+    .pipe(pp({
+        conditions: ['CHROME']
+    }))
+    .pipe(babel({
+        presets: ['es2015']
+    }))
     .pipe(gulp.dest(addon.dir + '_chrome_addon'));
 });
 
@@ -41,9 +47,19 @@ gulp.task('ff-copy', ['manifest'], function() {
     .pipe(gulp.dest(addon.dir + '_ff_addon'));
 });
 
-gulp.task('ff-pp', ['ff-copy'], function() {
-    return gulp.src(['common/code/*.js', 'common/ui/*.html', 'common/skin/*.css'])
-    .pipe(pp({conditions: ['FIREFOX']}))
+gulp.task('ff-data', ['ff-copy'], function() {
+    return gulp.src(['common/ui/*.html', 'common/skin/*.css'])
+    .pipe(gulp.dest(addon.dir + '_ff_addon/data'));
+});
+
+gulp.task('ff-pp', ['ff-data'], function() {
+    return gulp.src('common/code/*.js')
+    .pipe(pp({
+        conditions: ['FIREFOX']
+    }))
+    .pipe(babel({
+        presets: ['es2015']
+    }))
     .pipe(gulp.dest(addon.dir + '_ff_addon/data'));
 });
 

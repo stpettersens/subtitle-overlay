@@ -11,14 +11,14 @@
  * @param video {Object} Target video.
 */
 function createOverlay(video) {
-    let canvas = document.createElement('canvas');
+    var canvas = document.createElement('canvas');
     canvas.id = 'so_subtitles';
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight - 35;
     setYouTube();
     if(!isYouTube()) {
         wrap('video', 'div', 'so_extension');
-        let w = document.getElementsByClassName('so_extension')[0];
+        var w = document.getElementsByClassName('so_extension')[0];
         w.appendChild(canvas);
     }
 
@@ -27,7 +27,7 @@ function createOverlay(video) {
      *
     */
     function isYouTube() {
-        let oyt = false;
+        var oyt = false;
         if(/youtube\.com/.test(document.location.href)) {
             oyt = true;
         }
@@ -52,14 +52,14 @@ function createOverlay(video) {
      * @param className {String} Wrapping element class. 
     */
     function wrap(target, el, className) {
-        let src = document.getElementsByTagName(target)[0];
-        let wrapped = '<' + el + ' class="' + className + '">';
+        var src = document.getElementsByTagName(target)[0];
+        var wrapped = '<' + el + ' class="' + className + '">';
         wrapped += src.outerHTML + '</' + el + '>';
         src.outerHTML = wrapped;
     }
 
     // Set video width and height from canvas width and height.
-    let videoInfo = {
+    var videoInfo = {
         width: canvas.width,
         height: canvas.height
     }
@@ -98,8 +98,8 @@ function init() {
         Get target video (first video on page), create the subtitle overlay
         and add event listeners to track playing, pausing and seeking.
     */ 
-    let video = document.getElementsByTagName('video')[0];
-    let videoInfo = null;
+    var video = document.getElementsByTagName('video')[0];
+    var videoInfo = null;
     if(video !== undefined) {
         videoInfo = createOverlay(video);
         video = document.getElementsByTagName('video')[0];
@@ -140,8 +140,8 @@ function init() {
      * and clear subtitles (and show any information + errors) over target video.
     */
     addMessageListener(function(request) {
-        let canvas = document.getElementById('so_subtitles');
-        let ctx = canvas.getContext('2d');
+        var canvas = document.getElementById('so_subtitles');
+        var ctx = canvas.getContext('2d');
 
         if(request.type == 'subtitle') {
             displaySubtitle(ctx, request.subtitle);

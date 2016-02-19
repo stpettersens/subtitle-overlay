@@ -53,7 +53,7 @@ function sendFileMessage(request) {
     // #elseif FIREFOX
     window.lines = request.lines;
     window.filename = request.filename;
-    let event = document.createEvent('CustomEvent');
+    var event = document.createEvent('CustomEvent');
     event.initCustomEvent('file-message', true, true, request);
     document.documentElement.dispatchEvent(event);
     // #fi

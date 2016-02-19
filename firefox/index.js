@@ -14,7 +14,7 @@ var data = require('sdk/self').data;
 var core = require('./data/main.js');
 var storage = require('./data/storage.js');
 
-var g_playing;
+var g_playing = null;
 
 const MS = 1000;
 const OFFSET_X = 40;

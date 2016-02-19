@@ -1,8 +1,8 @@
 // #if FIREFOX
-let ss = require('sdk/simple-storage');
+var ss = require('sdk/simple-storage');
 // #fi
 
-class Storage {
+var Storage = (function() {
 
     /** 
      * Storage class which abstracts storing data for the extension
@@ -10,7 +10,7 @@ class Storage {
      * (No need to invoke this as all Storage methods are used statically).
      * @constructor
     */
-    constructor() {} 
+    function Storage() {} 
 
     /**
      * Set key, value pair in underlying storage.
@@ -18,7 +18,7 @@ class Storage {
      * @param key {String} Key for value.
      * @param value {Any} Value to store.
     */
-    static set(key, value) {
+    Storage.set = function(key, value) {
         // #if CHROME
         sessionStorage.setItem(key, value);
         // #elseif FIREFOX
@@ -34,7 +34,7 @@ class Storage {
      * @param collection {String} Collection name to store value in.
      * @param value {Any} Value to store for key or as part of collection.
     */
-    static setCollection(key, collection, value) {
+    Storage.setCollection = function(key, collection, value) {
         // #if CHROME
         Storage.set(key, value);
         // #elseif FIREFOX
@@ -43,7 +43,7 @@ class Storage {
         }
         ss.storage[collection].push(value);
         // #fi
-    }
+    };
 
     /**
      * Get a value for corresponding key from underlying storage.
@@ -51,20 +51,20 @@ class Storage {
      * @param key {String} Key for value to retrieve.
      * @returns {Any} Value from key.
     */
-    static get(key) {
+    Storage.get = function(key) {
         // #if CHROME
         return sessionStorage.getItem(key);
         // #elseif FIREFOX
         return ss.storage[key];
         // #fi
-    }
+    };
 
     /** 
      * Remove a value for corresponding key from underlying storage.
      * @static
      * @param key {String} Key for value to remove.
     */
-    static remove(key) {
+    Storage.remove = function(key) {
         // #if CHROME
         sessionStorage.removeItem(key);
         // #elseif FIREFOX
@@ -79,10 +79,10 @@ class Storage {
      * @param collection {String} Collection to get values for.
      * @returns {Array} Array of matching values.
     */
-    static getMatchingValues(pattern, collection) {
-        let values = [];
+    Storage.getMatchingValues = function(pattern, collection) {
+        var values = [];
         // #if CHROME
-        for(let key in sessionStorage) {
+        for(key in sessionStorage) {
             if(pattern.test(key)) {
                 values.push(sessionStorage.getItem(key));
             }
@@ -93,7 +93,7 @@ class Storage {
         })
         // #fi
         return values;
-    }
+    };
 
     /**
      * Get matching keys for a key pattern or collection.
@@ -101,10 +101,10 @@ class Storage {
      * @param pattern {RegExp} Pattern to get matching keys for.
      * @returns {Array} Array of matching keys.
     */
-    static getMatchingKeys(pattern, collection) {
-        let keys = [];
+    Storage.getMatchingKeys = function(pattern, collection) {
+        var keys = [];
         // #if CHROME
-        for(let key in sessionStorage) {
+        for(key in sessionStorage) {
             if(pattern.test(key)) {
                 keys.push(key);
             }
@@ -113,8 +113,11 @@ class Storage {
         keys.push(collection);
         // #fi
         return keys;
-    }
-}
+    };
+
+    return Storage;
+
+})();
 
 // #if FIREFOX
 // Make available to index.js.

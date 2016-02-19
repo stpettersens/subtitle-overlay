@@ -10,14 +10,14 @@
  * Handle loading subtiles from popup.html into the extension core.
 */
 document.addEventListener('DOMContentLoaded', function() {
-    let input = document.getElementById('input');
+    var input = document.getElementById('input');
     input.addEventListener('change', handleFileSelect, false);
 
     function handleFileSelect(e) {
-        let files = e.target.files;
-        let reader = new FileReader();
+        var files = e.target.files;
+        var reader = new FileReader();
         reader.onload = function(data) {
-            let lines = data.target.result.split('\n');
+            var lines = data.target.result.split('\n');
             sendFileMessage({
                 action: 'load',
                 lines: lines, 
